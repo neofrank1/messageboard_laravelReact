@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
+use App\Http\Controllers\MessageController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -15,7 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    
+    Route::post('postMessage', [MessageController::class, 'postMessage'])->name('postMessage');
 });
 
 require __DIR__.'/settings.php';

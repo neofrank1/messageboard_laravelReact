@@ -2,13 +2,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
-import { useState, type ChangeEvent } from 'react';
+import { Head, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -18,16 +16,15 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Dashboard() {
-    const [message, setMessage] = useState('');
+    const form = useForm({ content: '' });
 
-    const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-        setMessage(e.target.value);
+    const submit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        form.post('/postMessage', {
+            onSuccess: () => form.reset('content'),
+        });
     };
 
-    const handleSend = () => {
-        // Here we simply alert the current message value
-        alert(message);
-    };
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -49,15 +46,17 @@ export default function Dashboard() {
                             <div>
                                 <p className='font-bold text-2xl'>Post Activity</p>
                                 <div className="grid grid-rows w-full gap-2">
-                                    <Textarea
-                                        placeholder="Type your message here."
-                                        className="h-24 resize-none mt-2"
-                                        value={message}
-                                        onChange={handleChange}
-                                    />
-                                    <Button className='text-white hover:saturate-50' onClick={handleSend}>
-                                        Send message
-                                    </Button>
+                                    <form onSubmit={submit}>
+                                        <Textarea
+                                            placeholder="Type your message here."
+                                            className="h-24 resize-none mt-2"
+                                            value={form.data.content}
+                                            onChange={e => form.setData('content', e.target.value)}
+                                        />
+                                        <Button className='text-white hover:saturate-50 mt-2 w-full' type="submit" disabled={form.processing || !form.data.content.trim()}>
+                                            {form.processing ? 'Sending...' : 'Send message'}
+                                        </Button>
+                                    </form>
                                     <div>
                                         Post
                                     </div>

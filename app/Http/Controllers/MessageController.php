@@ -40,4 +40,14 @@ class MessageController extends Controller
 
         return redirect()->back();
     }
+
+    public function dislikeMessage($id)
+    {
+        $message = Message::findOrFail($id);
+        $message->dislikes += 1;
+        $message->save();
+
+        return redirect()->back();
+    }
+
 }

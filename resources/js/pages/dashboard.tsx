@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { type Message, MessageProps } from '@/types/messageTypes';
+import { type Message} from '@/types/messageTypes';
 import { ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
 import { router } from '@inertiajs/react';
 
@@ -30,8 +30,17 @@ export default function Dashboard({ messages }: { messages: Message[] }) {
             ...prevLikes,
             [messageId]: (prevLikes[messageId] || 0) + 1,
         }));
-        router.post(`/likeMessage/${messageId}`);
-    };
+        router.post(`/likeMessage/${messageId}`, { preserveScroll: true });
+    };git 
+
+    const handleDislike = (messageId: number) => {
+        setDislikes((prevDislikes) => ({
+            ...prevDislikes,
+            [messageId]: (prevDislikes[messageId] || 0) + 1,
+        }));
+        router.post(`/dislikeMessage/${messageId}`, { preserveScroll: true });
+    }
+
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -140,13 +149,13 @@ export default function Dashboard({ messages }: { messages: Message[] }) {
                                                                 </div>
                                                                 <div className='row-span-1 grid grid-rows-2 gap-1'>
                                                                     <div className='flex items-center gap-1'>
-                                                                        <Button className='w-[2rem] h-[2rem]' type='button' onClick={handleLike(message.id)}>
+                                                                        <Button className='w-[2rem] h-[2rem]' type='button' onClick={() => handleLike(message.id)}>
                                                                             <ThumbsUpIcon className='w-[1rem] h-[1rem]' />
                                                                         </Button>
                                                                         <span className='my-0.5'>{message.likes}</span>
                                                                     </div>
                                                                     <div className='flex items-center gap-1'>
-                                                                        <Button className='w-[2rem] h-[2rem]' type='button'>
+                                                                        <Button className='w-[2rem] h-[2rem]' type='button' onClick={() => handleDislike(message.id)}>
                                                                             <ThumbsDownIcon className='w-[1rem] h-[1rem]' />
                                                                         </Button>
                                                                         <span className='my-0.5'>{message.dislikes}</span>

@@ -18,6 +18,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [MessageController::class, 'index'])->name('dashboard');
     Route::post('/postMessage', [MessageController::class, 'postMessage'])->name('postMessage');
     Route::post('/likeMessage/{id}', [MessageController::class, 'likeMessage'])->name('likeMessage');
+    Route::post('/dislikeMessage/{id}', [MessageController::class, 'dislikeMessage'])->name('dislikeMessage');
+
+    // Chat page route
+    Route::get('/chat', [App\Http\Controllers\ChatController::class, 'chatPage'])->name('chatPage');
 });
 
 require __DIR__.'/settings.php';

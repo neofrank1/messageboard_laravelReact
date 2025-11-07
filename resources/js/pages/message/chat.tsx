@@ -2,6 +2,8 @@ import AppLayout from '@/layouts/app-layout';
 import React from 'react';
 import { Head } from '@inertiajs/react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { MessageSquarePlus } from 'lucide-react';
 
 export default function ChatPage() {
   return (
@@ -11,24 +13,32 @@ export default function ChatPage() {
               <div className='text-2xl font-extrabold mb-4'>Chat Page</div>
                 <Card>
                   <CardContent>
-                    <div className='w-full h-96 grid grid-rows-7 grid-flow-col gap-4'>
-                      <div className='col-span-3 row-span-1'>
-                          <div className='grid grid-cols-3 text-left'>
-                            <div className='px-2'>Recent Message</div>
-                            <div className='col-span-2'>
-                              <div className='ml-2'>
-                                <div className='font-bold'>User Name</div>
-                              </div>
-                            </div>
-                          </div>
+                    <div className='grid grid-cols-3'>
+                      <div className='flex justify-between items-center'>
+                        <div>
+                          Recent Message
+                        </div>
+                       <div>
+                         <button className='border-2 rounded-sm p-1 border-gray-200 hover:bg-gray-700' type='button'>
+                            <MessageSquarePlus></MessageSquarePlus>
+                          </button>
+                       </div>
                       </div>
-                      <div className='row-span-6 border-r-2 border-gray-200'>
-                          <div className='border-2 rounded-2xl p-2 m-2'>
-                              Hello
-                          </div>
+                      <div className='col-span-2 flex justify-start items-center ml-4'>
+                        <div>
+                          Username
+                        </div>
                       </div>
-                      <div className='col-span-2 row-span-6'>
-                          Hello
+                    </div>
+                    <Separator className='m-3'></Separator>
+                    <div className='grid grid-cols-3'>
+                       <div className='border-r-2 border-gray-400'>
+                        <button className='border-2 rounded-full p-3 w-95 hover:bg-gray-500 text-left' type='button'>
+                          Sample Button
+                        </button>
+                      </div>
+                      <div className='col-span-2 ml-2'>
+                        More content can go here.
                       </div>
                     </div>
                   </CardContent>

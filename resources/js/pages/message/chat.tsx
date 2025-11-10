@@ -3,7 +3,9 @@ import React from 'react';
 import { Head } from '@inertiajs/react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { MessageSquarePlus } from 'lucide-react';
+import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupButton } from '@/components/ui/input-group';
+import { MessageSquarePlus, Send } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function ChatPage() {
   return (
@@ -38,7 +40,21 @@ export default function ChatPage() {
                         </button>
                       </div>
                       <div className='col-span-2 ml-2'>
-                        More content can go here.
+                        <div className='grid grid-rows-3 p-2'>
+                          <div className='row-span-3'>
+                            <ScrollArea className='h-146'>
+
+                            </ScrollArea>
+                          </div>
+                          <div className='row-span-1'>
+                            <InputGroup>
+                              <InputGroupInput placeholder='Type your message here...' />
+                              <InputGroupAddon align={'inline-end'}>
+                                <InputGroupButton className='border-2 rounded-full p-3 hover:bg-slate-900 text-left'><Send /></InputGroupButton>
+                              </InputGroupAddon>
+                            </InputGroup>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </CardContent>

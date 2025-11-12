@@ -6,8 +6,19 @@ import { Separator } from '@/components/ui/separator';
 import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupButton } from '@/components/ui/input-group';
 import { MessageSquarePlus, Send } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useForm } from '@inertiajs/react';
 
 export default function ChatPage() {
+
+  const form = useForm({ message: '', receiver_id: 1});
+  
+  const submit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    form.post('/sendMessage', {
+      onSuccess: () => form.reset('message'),
+    });
+  };
+
   return (
     <AppLayout>
         <Head title="Chat" />
@@ -47,12 +58,15 @@ export default function ChatPage() {
                             </ScrollArea>
                           </div>
                           <div className='row-span-1'>
-                            <InputGroup>
-                              <InputGroupInput placeholder='Type your message here...' />
-                              <InputGroupAddon align={'inline-end'}>
-                                <InputGroupButton className='border-2 rounded-full p-3 hover:bg-slate-900 text-left'><Send /></InputGroupButton>
-                              </InputGroupAddon>
-                            </InputGroup>
+                            <form onSubmit={submit}>
+                              <InputGroup>
+                                <InputGroupInput placeholder='Type your message here...' value={form.data.message} onChange={e => form.setData('message', e.target.value)} />
+                                <input type='hidden' name='receiver_id' value={form.data.receiver_id} />
+                                <InputGroupAddon align={'inline-end'}>
+                                  <InputGroupButton className='border-2 rounded-full p-3 hover:bg-slate-900 text-left' type='submit'><Send /></InputGroupButton>
+                                </InputGroupAddon>
+                              </InputGroup>
+                            </form>
                           </div>
                         </div>
                       </div>

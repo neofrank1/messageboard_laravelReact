@@ -5,6 +5,7 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\FriendListController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -23,6 +24,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Chat page route
     Route::get('/chat', [ChatController::class, 'chatPage'])->name('chatPage');
     Route::post('/sendMessage', [ChatController::class, 'sendMessage'])->name('sendMessage');
+
+    // Friend Functionality route
+    Route::post('/addFriend', [FriendListController::class, 'addFriend'])->name('addFriend');
+    Route::post('/acceptFriendRequest', [FriendListController::class, 'acceptFriendRequest'])->name('acceptFriendRequest');
+    Route::post('/removeFriend', [FriendListController::class, 'removeFriend'])->name('removeFriend');
+    Route::get('/friendRequests', [FriendListController::class, 'friendRequestPage'])->name('friendRequestPage');
 });
 
 require __DIR__.'/settings.php';

@@ -29,7 +29,6 @@ import { chatPage, dashboard, friendRequestPage } from '@/routes';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { Users, HouseIcon, Menu, MessageCircleIcon, Search } from 'lucide-react';
-import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
@@ -64,16 +63,13 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const page = usePage<SharedData>();
     const { auth } = page.props;
     const getInitials = useInitials();
-    const [search, setSearch] = useState('');
     const form = useForm({ search: '' });
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value);
-    };
-
     const submit = (e: React.FormEvent<HTMLFormElement>) => {
-        router.post('/search', { search: search });
-    }
+        e.preventDefault();
+        // Post to /searchUser with the search value as a query parameter.
+        form.post(`/searchUser?search=${encodeURIComponent(form.data.search)}`);
+    };
 
     return (
         <>
@@ -173,13 +169,21 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
 
                     <div className="ml-auto flex items-center space-x-2">
                         <div className="relative flex items-center space-x-1">
-                            <InputGroup>
-                                <InputGroupInput placeholder='Search MessageBoard' onChange={handleSearchChange} value={form.data.search}/>
-                                <input type='hidden' name='receiver_id' />
-                                <InputGroupAddon align={'inline-end'}>
-                                    <InputGroupButton className='border-2 rounded-full p-3 hover:bg-slate-900 text-left' type='submit'><Search /></InputGroupButton>
-                                </InputGroupAddon>
-                            </InputGroup>
+                            <form onSubmit={submit} className="w-full">
+                                <InputGroup>
+                                    <InputGroupInput
+                                        placeholder="Search MessageBoard"
+                                        onChange={e => form.setData('search', e.target.value)}
+                                        value={form.data.search}
+                                    />
+                                    <input type="hidden" name="receiver_id" />
+                                    <InputGroupAddon align={'inline-end'}>
+                                        <InputGroupButton className='border-2 rounded-full p-3 hover:bg-slate-900 text-left' type='submit'>
+                                            <Search />
+                                        </InputGroupButton>
+                                    </InputGroupAddon>
+                                </InputGroup>
+                            </form>
                         </div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>

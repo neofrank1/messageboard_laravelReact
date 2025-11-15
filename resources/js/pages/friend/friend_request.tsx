@@ -3,10 +3,10 @@ import { Head } from "@inertiajs/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { UserRoundX, UserRoundCheck } from 'lucide-react';
-import { FreindRequestTypes } from "@/types/friendRequestTypes";
+import { FriendRequestTypes } from "@/types/friendRequestTypes";
 
 
-export default function FriendRequestPage({ friendRequests }: { friendRequests: FreindRequestTypes[] }) {
+export default function FriendRequestPage({ friendRequests }: { friendRequests: FriendRequestTypes[] }) {
     return (
         <AppLayout>
             <Head title="Friend Requests" />

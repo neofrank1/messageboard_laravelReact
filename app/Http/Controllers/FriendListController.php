@@ -58,4 +58,15 @@ class FriendListController extends Controller
         $friendList->delete();
         return redirect()->back()->with('success', 'Friend removed successfully!');
     }
+
+    public function searchUser(Request $request) {
+        $request->validate([
+            'search' => 'required|string|max:255',
+        ]);
+        $searchQuery = $request->query('search');
+        $users = DB::table('users')
+                ->where('name', 'like', '%' . $searchQuery . '%')
+                ->get();
+        return inertia('friend/search_friend', ['users' => $users]);
+    }
 }

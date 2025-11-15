@@ -30,6 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/acceptFriendRequest', [FriendListController::class, 'acceptFriendRequest'])->name('acceptFriendRequest');
     Route::post('/removeFriend', [FriendListController::class, 'removeFriend'])->name('removeFriend');
     Route::get('/friendRequests', [FriendListController::class, 'friendRequestPage'])->name('friendRequestPage');
+    Route::match(['get', 'post'], '/searchUser', [FriendListController::class, 'searchUser'])->name('searchUser');
 });
 
 require __DIR__.'/settings.php';

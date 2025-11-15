@@ -29,10 +29,10 @@ import {
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
 import { cn, isSameUrl, resolveUrl } from '@/lib/utils';
-import { chatPage, dashboard } from '@/routes';
+import { chatPage, dashboard, friendRequestPage } from '@/routes';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, HouseIcon, Menu, MessageCircleIcon, Search } from 'lucide-react';
+import { Users, HouseIcon, Menu, MessageCircleIcon, Search } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 
@@ -47,6 +47,12 @@ const mainNavItems: NavItem[] = [
         href: chatPage(),
         icon: MessageCircleIcon,
     },
+    {
+        title: 'Friend Request',
+        href: friendRequestPage(),
+        icon: Users,
+    }
+
 ];
 
 const activeItemStyles =

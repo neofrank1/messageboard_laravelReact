@@ -5,15 +5,27 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\FriendList;
 use App\Models\FriendRequest;
-
-use function Termwind\render;
-
+use Illuminate\Support\Facades\DB;
 class FriendListController extends Controller
 {
     //
 
     public function friendRequestPage() {
-        return inertia('friend/friend_request');
+        
+        if (auth()->check() == false) {
+            return redirect()->route('login');
+        } else {
+            $user = auth()->user();
+        }
+
+        $friendRequest = DB::table('friend_requests')
+                        ->leftJoin('users', 'friend_requests.user_id', '=', 'users.id')
+                        ->select('friend_requests.*', 'users.name as user_name', 'users.id as user_id')
+                        ->where('friend_requests.user_id', $user->id)
+                        ->where('friend_requests.status', false)
+                        ->get();
+
+        return inertia('friend/friend_request',['friendRequests' => $friendRequest]);
     }
 
 

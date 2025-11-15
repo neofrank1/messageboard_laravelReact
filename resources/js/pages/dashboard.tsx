@@ -31,7 +31,7 @@ export default function Dashboard({ messages }: { messages: Message[] }) {
             [messageId]: (prevLikes[messageId] || 0) + 1,
         }));
         router.post(`/likeMessage/${messageId}`, { preserveScroll: true });
-    };git 
+    };
 
     const handleDislike = (messageId: number) => {
         setDislikes((prevDislikes) => ({

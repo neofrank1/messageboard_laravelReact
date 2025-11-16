@@ -20,8 +20,8 @@ class FriendListController extends Controller
 
         $friendRequest = DB::table('friend_requests')
                         ->leftJoin('users', 'friend_requests.user_id', '=', 'users.id')
-                        ->select('friend_requests.*', 'users.name as user_name', 'users.id as user_id')
-                        ->where('friend_requests.user_id', $user->id)
+                        ->select('friend_requests.*', 'users.name as user_name', 'users.id as user_id', 'users.email as user_email')
+                        ->where('friend_requests.friend_id', $user->id)
                         ->where('friend_requests.status', false)
                         ->get();
 
@@ -66,7 +66,18 @@ class FriendListController extends Controller
         $searchQuery = $request->query('search');
         $users = DB::table('users')
                 ->where('name', 'like', '%' . $searchQuery . '%')
+                ->where('id', '!=', $request->user()->id)
                 ->get();
-        return inertia('friend/search_friend', ['users' => $users]);
+        
+        // Get the IDs of users the current user has already sent friend requests to
+        $addedFriendIds = DB::table('friend_requests')
+                ->where('user_id', $request->user()->id)
+                ->pluck('friend_id')
+                ->toArray();
+        
+        return inertia('friend/search_friend', [
+            'users' => $users,
+            'addedFriendIds' => $addedFriendIds
+        ]);
     }
 }

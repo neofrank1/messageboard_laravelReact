@@ -25,14 +25,14 @@ export default function FriendRequestPage({ friendRequests }: { friendRequests: 
                             ) : (
                                 <div className="grid grid-rows">
                                     {friendRequests.map((request, i) => (
-                                        <div className="border-b-1 p-2 border-gray-400">
+                                        <div key={request.id} className="border-b-1 p-2 border-gray-400">
                                             <div className="grid grid-cols-2">
                                                 <input type="hidden" value={request.user_id} />
                                                 <div className="flex justify-start items-center">
                                                     <img src="https://i.pravatar.cc/150?img=1" alt="User Avatar" className="w-[50px] h-[50px] rounded-full" />
                                                     <div className="ml-3 grid grid-rows">
                                                         <p className="text-lg font-extrabold">{request.user_name}</p>
-                                                        <p className="text-sm text-gray-500">john.doe@example.com</p>
+                                                        <p className="text-sm text-gray-500">{request.user_email}</p>
                                                     </div>
                                                 </div>
                                                 <div className="flex justify-end items-center gap-4">

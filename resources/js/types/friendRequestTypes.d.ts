@@ -4,6 +4,7 @@ export type FriendRequestTypes = {
     friend_id: number;
     status: boolean;
     user_name: string;
+    user_email: string;
 }
 
 export type searchUserTypes = {

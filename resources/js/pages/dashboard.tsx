@@ -46,6 +46,8 @@ export default function Dashboard({ messages }: { messages: Message[] }) {
         const timer = setTimeout(() => {
             setIsLoading(false);
         }, 500);
+
+        return () => clearTimeout(timer);
     }, [messages]);
 
     const formatDate = (date: string) => {

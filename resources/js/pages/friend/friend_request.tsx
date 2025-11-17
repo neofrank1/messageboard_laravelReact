@@ -1,12 +1,45 @@
 import AppLayout from "@/layouts/app-layout";
-import { Head } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { UserRoundX, UserRoundCheck } from 'lucide-react';
-import { FriendRequestTypes } from "@/types/friendRequestTypes";
+import { FriendRequestTypes } from "@/types/friendTypes";
+import { toast } from "sonner";
 
 
 export default function FriendRequestPage({ friendRequests }: { friendRequests: FriendRequestTypes[] }) {
+
+
+    const handleAcceptFriendRequest = (friendRequestId: number) => {
+        router.post('/acceptFriendRequest', { request_id: friendRequestId }, {
+            onSuccess: (response) => {
+                if (response) {
+                    toast.success('Friend request accepted successfully!');
+                } else {
+                    toast.error('Error Response friend request!');
+                }
+            },
+            onError: (errors) => {
+                console.error('Error accepting friend request:', errors);
+            }
+        });
+    }
+
+    const handleRejectFriendRequest = (friendRequestId: number) => {
+        router.post('/rejectFriendRequest', { request_id: friendRequestId }, {
+            onSuccess: (response) => {
+                if (response) {
+                    toast.success('Friend request rejected successfully!');
+                } else {
+                    toast.error('Error Respone friend request!');
+                }
+            },
+            onError: (errors) => {
+                console.error('Error rejecting friend request:', errors);
+            }
+        });
+    }
+    
     return (
         <AppLayout>
             <Head title="Friend Requests" />
@@ -24,10 +57,9 @@ export default function FriendRequestPage({ friendRequests }: { friendRequests: 
                                 </div>
                             ) : (
                                 <div className="grid grid-rows">
-                                    {friendRequests.map((request, i) => (
+                                    {friendRequests.map((request) => (
                                         <div key={request.id} className="border-b-1 p-2 border-gray-400">
                                             <div className="grid grid-cols-2">
-                                                <input type="hidden" value={request.user_id} />
                                                 <div className="flex justify-start items-center">
                                                     <img src="https://i.pravatar.cc/150?img=1" alt="User Avatar" className="w-[50px] h-[50px] rounded-full" />
                                                     <div className="ml-3 grid grid-rows">
@@ -36,10 +68,10 @@ export default function FriendRequestPage({ friendRequests }: { friendRequests: 
                                                     </div>
                                                 </div>
                                                 <div className="flex justify-end items-center gap-4">
-                                                    <button className="border-2 rounded-sm p-1 border-gray-200 hover:bg-gray-700 bg-emerald-700 flex items-center gap-2 cursor-pointer" type="button">
+                                                    <button className="border-2 rounded-sm p-1 border-gray-200 hover:bg-gray-700 bg-emerald-700 flex items-center gap-2 cursor-pointer" type="button" onClick={() => handleAcceptFriendRequest(request.id)}>
                                                         <UserRoundCheck />Accept
                                                     </button>
-                                                    <button className="border-2 rounded-sm p-1 border-gray-200 hover:bg-gray-700 bg-red-800 flex items-center gap-2 cursor-pointer" type="button">
+                                                    <button className="border-2 rounded-sm p-1 border-gray-200 hover:bg-gray-700 bg-red-800 flex items-center gap-2 cursor-pointer" type="button" onClick={() => handleRejectFriendRequest(request.id)}>
                                                         <UserRoundX /> Reject
                                                     </button>
                                                 </div>

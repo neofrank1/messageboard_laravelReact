@@ -28,7 +28,47 @@ class FriendListController extends Controller
         return inertia('friend/friend_request',['friendRequests' => $friendRequest]);
     }
 
+    // Accept a friend request
+    public function acceptFriendRequest(Request $request) {
+        $request->validate([
+            'request_id' => 'required|exists:friend_requests,id',
+        ]);
+        $friendRequest = FriendRequest::where('id', $request->input('request_id'))->first();
+        $friendRequest->status = true;
+        if ($friendRequest->save()) {
+            // Save bidirectional friendship
+            // For the one who is accepting the friend request
+            $friendList1 = new FriendList();
+            $friendList1->user_id = $request->user()->id;
+            $friendList1->friend_id = $friendRequest->user_id;
+            $friendList1->save();
 
+            // For the one who is being accepted as a friend
+            $friendList2 = new FriendList();
+            $friendList2->user_id = $friendRequest->user_id;
+            $friendList2->friend_id = $request->user()->id;
+            $friendList2->save();
+
+            return redirect()->back()->with('success', 'Friend request accepted successfully!');
+        } else {
+            return redirect()->back()->with('error', 'Failed to accept friend request!');
+        }
+    }
+
+    // Reject a friend request
+    public function rejectFriendRequest(Request $request) {
+        $request->validate([
+            'request_id' => 'required|exists:friend_requests,id',
+        ]);
+        $friendRequest = FriendRequest::where('id', $request->input('request_id'))->first();
+        if ($friendRequest->delete()) {
+            return redirect()->back()->with('success', 'Friend request rejected successfully!');
+        } else {
+            return redirect()->back()->with('error', 'Failed to reject friend request!');
+        }
+    }
+
+    // Add a friend
     public function addFriend(Request $request) {
         $request->validate([
             'friend_id' => 'required|exists:users,id',
@@ -41,15 +81,7 @@ class FriendListController extends Controller
         return redirect()->back()->with('success', 'Friend request sent successfully!');
     }
 
-    public function acceptFriendRequest(Request $request) {
-        $request->validate([
-            'friend_id' => 'required|exists:users,id',
-        ]);
-        $friendRequest = FriendRequest::where('user_id', $request->user()->id)->where('friend_id', $request->input('friend_id'))->first();
-        $friendRequest->status = true;
-        $friendRequest->save();
-    }
-
+    // Remove a friend
     public function removeFriend(Request $request) {
         $request->validate([
             'friend_id' => 'required|exists:users,id',
@@ -59,6 +91,7 @@ class FriendListController extends Controller
         return redirect()->back()->with('success', 'Friend removed successfully!');
     }
 
+    // Search for users to add as friends
     public function searchUser(Request $request) {
         $request->validate([
             'search' => 'required|string|max:255',
@@ -75,9 +108,16 @@ class FriendListController extends Controller
                 ->pluck('friend_id')
                 ->toArray();
         
+        // Get the IDs of users who are already friends with the current user
+        $friendIds = DB::table('friend_lists')
+                ->where('user_id', $request->user()->id)
+                ->pluck('friend_id')
+                ->toArray();
+        
         return inertia('friend/search_friend', [
             'users' => $users,
-            'addedFriendIds' => $addedFriendIds
+            'addedFriendIds' => $addedFriendIds,
+            'friendIds' => $friendIds
         ]);
     }
 }

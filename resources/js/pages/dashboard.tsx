@@ -1,4 +1,4 @@
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardTitle} from '@/components/ui/card';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { Head, useForm } from '@inertiajs/react';
@@ -8,10 +8,11 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { type Message} from '@/types/messageTypes';
+import { type FriendListTypes} from '@/types/friendTypes';
 import { ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
 import { router } from '@inertiajs/react';
 
-export default function Dashboard({ messages }: { messages: Message[] }) {
+export default function Dashboard({ messages, friends }: { messages: Message[], friends: FriendListTypes[] }) {
     const [isLoading, setIsLoading] = useState(true);
 
     const form = useForm({ content: '' });
@@ -73,7 +74,7 @@ export default function Dashboard({ messages }: { messages: Message[] }) {
                                 <CardContent>
                                     <div className='grid grid-row gap-3'>
                                         <div className=''>
-
+                                            ADS
                                         </div>
                                     </div>
                                 </CardContent>
@@ -184,15 +185,32 @@ export default function Dashboard({ messages }: { messages: Message[] }) {
                         </div>
                         <div className='basis-128'>
                             <div className='grid grid-rows gap-4'>
+                                {/* Profile Card */}
                                 <Card>
                                     <CardContent>
 
                                     </CardContent>
                                 </Card>
-
+                                {/* Friend Side Card */}
                                 <Card>
                                     <CardContent>
-
+                                        <CardTitle className='font-bold text-lg text-left'>
+                                            Friends
+                                        </CardTitle>
+                                        <Separator className='my-1'/>
+                                        <div className='grid grid-rows'>
+                                            {friends.map((friend) => (
+                                            <div key={friend.id} className='border-b border-0.5 grid-cols'>
+                                                <div className='flex justify-start items-center'>
+                                                    <img src="https://i.pravatar.cc/150?img=1" alt="User Avatar" className="w-[35px] h-[35px] rounded-full" />
+                                                    <div className='grid grid-rows-2 ml-2 py-1'>
+                                                        <p className='font-extrabold'>{friend.friend_name}</p>
+                                                        <p className='text-sm text-gray-500'>{friend.friend_email}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            ))}
+                                        </div>
                                     </CardContent>
                                 </Card>
                             </div>

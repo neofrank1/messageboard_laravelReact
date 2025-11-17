@@ -28,6 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Friend Functionality route
     Route::post('/addFriend', [FriendListController::class, 'addFriend'])->name('addFriend');
     Route::post('/acceptFriendRequest', [FriendListController::class, 'acceptFriendRequest'])->name('acceptFriendRequest');
+    Route::post('/rejectFriendRequest', [FriendListController::class, 'rejectFriendRequest'])->name('rejectFriendRequest');
     Route::post('/removeFriend', [FriendListController::class, 'removeFriend'])->name('removeFriend');
     Route::get('/friendRequests', [FriendListController::class, 'friendRequestPage'])->name('friendRequestPage');
     Route::match(['get', 'post'], '/searchUser', [FriendListController::class, 'searchUser'])->name('searchUser');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Message;
+use App\Models\FriendList;
 use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
@@ -14,7 +15,14 @@ class MessageController extends Controller
                     ->join('users', 'messages.user_id', '=', 'users.id')
                     ->select('messages.*', 'users.name as user_name')
                     ->get();
-        return inertia('dashboard', ['messages' => $messages]);
+
+        $friends = DB::table('friend_lists')
+                    ->join('users', 'friend_lists.friend_id', '=', 'users.id')
+                    ->select('users.id as friend_id', 'users.name as friend_name', 'users.email as friend_email')
+                    ->where('friend_lists.user_id', auth()->user()->id)
+                    ->get();
+
+        return inertia('dashboard', ['messages' => $messages, 'friends' => $friends]);
     }
 
     public function postMessage(Request $request)

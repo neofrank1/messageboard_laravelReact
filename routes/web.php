@@ -6,12 +6,17 @@ use Laravel\Fortify\Features;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FriendListController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+
+    // User Routes
+    Route::get('/profile', [UserController::class, 'profilePage'])->name('profilePage');
+
     
     // Message routes
     Route::get('/dashboard', [MessageController::class, 'index'])->name('dashboard');

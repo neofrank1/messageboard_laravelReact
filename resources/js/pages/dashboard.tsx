@@ -88,6 +88,10 @@ export default function Dashboard({ messages, friends }: { messages: Message[], 
         }
     }
 
+    const profileRedirect = (users_id: number) => {
+        router.get(`/profile?id=${encodeURIComponent(users_id)}`)
+    }
+
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -275,7 +279,12 @@ export default function Dashboard({ messages, friends }: { messages: Message[], 
                                             <div className='flex justify-start items-center'>
                                                 <img src="https://i.pravatar.cc/150?img=1" alt="User Avatar" className="w-[50px] h-[50px] rounded-full" />
                                                 <div className='grid grid-rows-2 ml-2 py-1'>
-                                                    <p className='font-extrabold'>{auth.user.name}</p>
+                                                    <p
+                                                        className='font-extrabold cursor-pointer'
+                                                        onClick={() => profileRedirect(auth.user.id)}
+                                                    >
+                                                        {auth.user.name}
+                                                    </p>
                                                     <p className='text-sm text-gray-500'>{auth.user.email}</p>
                                                 </div>
                                             </div>

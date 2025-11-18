@@ -1,18 +1,21 @@
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardTitle} from '@/components/ui/card';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { type Message} from '@/types/messageTypes';
+import { type FriendListTypes} from '@/types/friendTypes';
 import { ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
-import { router } from '@inertiajs/react';
+import { type SharedData } from '@/types';
 
-export default function Dashboard({ messages }: { messages: Message[] }) {
+export default function Dashboard({ messages, friends }: { messages: Message[], friends: FriendListTypes[] }) {
     const [isLoading, setIsLoading] = useState(true);
+    const page = usePage<SharedData>();
+    const { auth } = page.props;
 
     const form = useForm({ content: '' });
     const submit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,23 +25,67 @@ export default function Dashboard({ messages }: { messages: Message[] }) {
         });
     };
 
-    const [likes, setLikes] = useState<{ [key: number]: number }>({});
-    const [dislikes, setDislikes] = useState<{ [key: number]: number }>({});
+    const [likedMessages, setLikedMessages] = useState<Set<number>>(new Set());
+    const [dislikedMessages, setDislikedMessages] = useState<Set<number>>(new Set());
 
     const handleLike = (messageId: number) => {
-        setLikes((prevLikes) => ({
-            ...prevLikes,
-            [messageId]: (prevLikes[messageId] || 0) + 1,
-        }));
-        router.post(`/likeMessage/${messageId}`, { preserveScroll: true });
-    };git 
+        const isLiked = likedMessages.has(messageId);
+        const isDisliked = dislikedMessages.has(messageId);
+        
+        if (isLiked) {
+            // Remove like
+            setLikedMessages(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(messageId);
+                return newSet;
+            });
+            router.post(`/likeMessage/${messageId}`, { action: 'remove' }, { preserveScroll: true });
+        } else {
+            // Add like
+            setLikedMessages(prev => new Set(prev).add(messageId));
+            
+            // If disliked, remove dislike first
+            if (isDisliked) {
+                setDislikedMessages(prev => {
+                    const newSet = new Set(prev);
+                    newSet.delete(messageId);
+                    return newSet;
+                });
+                router.post(`/dislikeMessage/${messageId}`, { action: 'remove' }, { preserveScroll: true });
+            }
+            
+            router.post(`/likeMessage/${messageId}`, { action: 'add' }, { preserveScroll: true });
+        }
+    };
 
     const handleDislike = (messageId: number) => {
-        setDislikes((prevDislikes) => ({
-            ...prevDislikes,
-            [messageId]: (prevDislikes[messageId] || 0) + 1,
-        }));
-        router.post(`/dislikeMessage/${messageId}`, { preserveScroll: true });
+        const isDisliked = dislikedMessages.has(messageId);
+        const isLiked = likedMessages.has(messageId);
+        
+        if (isDisliked) {
+            // Remove dislike
+            setDislikedMessages(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(messageId);
+                return newSet;
+            });
+            router.post(`/dislikeMessage/${messageId}`, { action: 'remove' }, { preserveScroll: true });
+        } else {
+            // Add dislike
+            setDislikedMessages(prev => new Set(prev).add(messageId));
+            
+            // If liked, remove like first
+            if (isLiked) {
+                setLikedMessages(prev => {
+                    const newSet = new Set(prev);
+                    newSet.delete(messageId);
+                    return newSet;
+                });
+                router.post(`/likeMessage/${messageId}`, { action: 'remove' }, { preserveScroll: true });
+            }
+            
+            router.post(`/dislikeMessage/${messageId}`, { action: 'add' }, { preserveScroll: true });
+        }
     }
 
 
@@ -46,7 +93,9 @@ export default function Dashboard({ messages }: { messages: Message[] }) {
         const timer = setTimeout(() => {
             setIsLoading(false);
         }, 500);
-    }, [messages]);
+
+        return () => clearTimeout(timer);
+    }, [messages, friends, auth]);
 
     const formatDate = (date: string) => {
         return new Date(date).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
@@ -71,7 +120,7 @@ export default function Dashboard({ messages }: { messages: Message[] }) {
                                 <CardContent>
                                     <div className='grid grid-row gap-3'>
                                         <div className=''>
-
+                                            ADS
                                         </div>
                                     </div>
                                 </CardContent>
@@ -149,13 +198,23 @@ export default function Dashboard({ messages }: { messages: Message[] }) {
                                                                 </div>
                                                                 <div className='row-span-1 grid grid-rows-2 gap-1'>
                                                                     <div className='flex items-center gap-1'>
-                                                                        <Button className='w-[2rem] h-[2rem]' type='button' onClick={() => handleLike(message.id)}>
+                                                                        <Button 
+                                                                            className={`w-[2rem] h-[2rem] ${likedMessages.has(message.id) ? 'bg-blue-500 hover:bg-blue-600 text-white' : ''}`} 
+                                                                            type='button' 
+                                                                            onClick={() => handleLike(message.id)}
+                                                                            variant={likedMessages.has(message.id) ? 'default' : 'outline'}
+                                                                        >
                                                                             <ThumbsUpIcon className='w-[1rem] h-[1rem]' />
                                                                         </Button>
                                                                         <span className='my-0.5'>{message.likes}</span>
                                                                     </div>
                                                                     <div className='flex items-center gap-1'>
-                                                                        <Button className='w-[2rem] h-[2rem]' type='button' onClick={() => handleDislike(message.id)}>
+                                                                        <Button 
+                                                                            className={`w-[2rem] h-[2rem] ${dislikedMessages.has(message.id) ? 'bg-red-500 hover:bg-red-600 text-white' : ''}`} 
+                                                                            type='button' 
+                                                                            onClick={() => handleDislike(message.id)}
+                                                                            variant={dislikedMessages.has(message.id) ? 'default' : 'outline'}
+                                                                        >
                                                                             <ThumbsDownIcon className='w-[1rem] h-[1rem]' />
                                                                         </Button>
                                                                         <span className='my-0.5'>{message.dislikes}</span>
@@ -182,15 +241,99 @@ export default function Dashboard({ messages }: { messages: Message[] }) {
                         </div>
                         <div className='basis-128'>
                             <div className='grid grid-rows gap-4'>
+                                {/* Profile Card */}
                                 <Card>
                                     <CardContent>
-
+                                        {isLoading ? (
+                                            <div className='grid grid-rows'>
+                                                <div className='flex justify-start items-center'>
+                                                    <Skeleton className='w-[50px] h-[50px] rounded-full' />
+                                                    <div className='grid grid-rows-2 gap-2 ml-2 py-1'>
+                                                        <Skeleton className='h-4 w-58' />
+                                                        <Skeleton className='h-4 w-58' />
+                                                    </div>
+                                                </div>
+                                                <Separator className='my-2'/>
+                                                <div className='grid grid-cols-3 gap-2 mt-3'>
+                                                    <div className='grid grid-rows-2 text-center'>
+                                                        <p className='text-sm text-gray-500'>Posts</p>
+                                                        <Skeleton className='h-4 w-24' />
+                                                    </div>
+                                                    <div className='grid grid-rows-2 text-center'>
+                                                        <p className='text-sm text-gray-500'>Friends</p>
+                                                        <Skeleton className='h-4 w-24' />
+                                                    </div>
+                                                    <div className='grid grid-rows-2 text-center'>
+                                                        <p className='text-sm text-gray-500'>Likes</p>
+                                                        <Skeleton className='h-4 w-24' />
+                                                    </div>
+                                                </div>
+                                               
+                                            </div>
+                                        ) : (
+                                        <div className='grid grid-rows'>
+                                            <div className='flex justify-start items-center'>
+                                                <img src="https://i.pravatar.cc/150?img=1" alt="User Avatar" className="w-[50px] h-[50px] rounded-full" />
+                                                <div className='grid grid-rows-2 ml-2 py-1'>
+                                                    <p className='font-extrabold'>{auth.user.name}</p>
+                                                    <p className='text-sm text-gray-500'>{auth.user.email}</p>
+                                                </div>
+                                            </div>
+                                            <Separator className='my-2'/>
+                                            <div className='grid grid-cols-3 gap-2 mt-3'>
+                                                <div className='grid grid-rows-2 text-center'>
+                                                    <p className='text-sm text-gray-500'>Posts</p>
+                                                    <p className='text-sm text-gray-500'>10</p>
+                                                </div>
+                                                <div className='grid grid-rows-2 text-center'>
+                                                    <p className='text-sm text-gray-500'>Friends</p>
+                                                    <p className='text-sm text-gray-500'>10</p>
+                                                </div>
+                                                <div className='grid grid-rows-2 text-center'>
+                                                    <p className='text-sm text-gray-500'>Likes</p>
+                                                    <p className='text-sm text-gray-500'>50</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        )}
                                     </CardContent>
                                 </Card>
-
+                                {/* Friend Side Card */}
                                 <Card>
                                     <CardContent>
-
+                                        <CardTitle className='font-bold text-lg text-left'>
+                                            Friends
+                                        </CardTitle>
+                                        <Separator className='my-1'/>
+                                        {isLoading ? (
+                                            Array.from({ length: 3 }).map((_, i) => (
+                                                <Fragment key={`skeleton-${i}`}>
+                                                     <div className='border-b border-0.5 grid-cols-2'>
+                                                        <div className='flex justify-start items-center'>
+                                                            <Skeleton className='w-[35px] h-[35px] rounded-full' />
+                                                            <div className='grid grid-rows-2 gap-2 ml-2 py-1'>
+                                                                <Skeleton className='h-4 w-58' />
+                                                                <Skeleton className='h-4 w-58' />
+                                                            </div>
+                                                        </div>
+                                                     </div>
+                                                </Fragment>
+                                            ))
+                                        ) : (
+                                        <div className='grid grid-rows'>
+                                            {friends.map((friend) => (
+                                            <div key={friend.id} className='border-b border-0.5 grid-cols'>
+                                                <div className='flex justify-start items-center'>
+                                                    <img src="https://i.pravatar.cc/150?img=1" alt="User Avatar" className="w-[35px] h-[35px] rounded-full" />
+                                                    <div className='grid grid-rows-2 ml-2 py-1'>
+                                                        <p className='font-extrabold'>{friend.friend_name}</p>
+                                                        <p className='text-sm text-gray-500'>{friend.friend_email}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            ))}
+                                        </div>
+                                        )}
                                     </CardContent>
                                 </Card>
                             </div>

@@ -8,9 +8,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FriendListController;
 
 Route::get('/', function () {
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
+    return redirect()->route('login');
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {

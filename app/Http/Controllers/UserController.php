@@ -20,10 +20,21 @@ class UserController extends Controller
         $friendCount = DB::table('friend_lists')
                         ->where('user_id', $userId)
                         ->count();
+        
+        // Fetch all messages sent by the user
+        $posts = DB::table('messages')
+                        ->where('user_id', $userId)
+                        ->get();
+
+        $postCount = DB::table('messages')
+                        ->where('user_id', $userId)
+                        ->count();
 
         return inertia('user/profile', [
             'user' => $user,
             'friendCount' => $friendCount,
+            'messages' => $posts,
+            'postCount' => $postCount,
         ]);
     }
 }

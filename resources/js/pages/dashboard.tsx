@@ -331,11 +331,11 @@ export default function Dashboard({ messages, friends }: { messages: Message[], 
                                         ) : (
                                         <div className='grid grid-rows'>
                                             {friends.map((friend) => (
-                                            <div key={friend.id} className='border-b border-0.5 grid-cols'>
+                                            <div key={friend.friend_id} className='border-b border-0.5 grid-cols'>
                                                 <div className='flex justify-start items-center'>
                                                     <img src="https://i.pravatar.cc/150?img=1" alt="User Avatar" className="w-[35px] h-[35px] rounded-full" />
                                                     <div className='grid grid-rows-2 ml-2 py-1'>
-                                                        <p className='font-extrabold'>{friend.friend_name}</p>
+                                                        <p className='font-extrabold cursor-pointer' onClick={() => profileRedirect(friend.friend_id)}>{friend.friend_name}</p>
                                                         <p className='text-sm text-gray-500'>{friend.friend_email}</p>
                                                     </div>
                                                 </div>

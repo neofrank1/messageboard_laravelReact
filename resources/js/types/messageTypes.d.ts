@@ -11,3 +11,13 @@ export type Message = {
 export interface MessageProps {
     messages: Message[];
 }
+
+export interface NewMessage {
+    content: string;
+    receiver_id: number;
+}
+
+export interface Friends {
+    id: number;
+    value: string;
+}

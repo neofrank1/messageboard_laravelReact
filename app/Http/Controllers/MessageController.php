@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Message;
-use App\Models\FriendList;
 use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller

@@ -7,8 +7,12 @@ import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupButton } from '
 import { MessageSquarePlus, Send } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useForm } from '@inertiajs/react';
+import { Button } from '@/components/ui/button';
+import { ChatMessage, MessageBubble } from '@/components/ui/message-bubble';
+import { Autocomplete, AutocompleteEmpty, AutocompleteInput, AutocompleteItem, AutocompleteList, AutocompletePopup, AutocompletePositioner, AutocompleteClear } from "@/components/ui/autocomplete";
+import { Friends } from '@/types/messageTypes';
 
-export default function ChatPage() {
+export default function ChatPage({Friends}: {Friends: Friends[]}) {
 
   const form = useForm({ message: '', receiver_id: 1});
   
@@ -18,7 +22,7 @@ export default function ChatPage() {
       onSuccess: () => form.reset('message'),
     });
   };
-
+  console.log(Friends);
   return (
     <AppLayout>
         <Head title="Chat" />
@@ -31,11 +35,6 @@ export default function ChatPage() {
                         <div>
                           Recent Message
                         </div>
-                       <div>
-                         <button className='border-2 rounded-sm p-1 border-gray-200 hover:bg-gray-700' type='button'>
-                            <MessageSquarePlus></MessageSquarePlus>
-                          </button>
-                       </div>
                       </div>
                       <div className='col-span-2 flex justify-start items-center ml-4'>
                         <div>
@@ -45,16 +44,37 @@ export default function ChatPage() {
                     </div>
                     <Separator className='m-3'></Separator>
                     <div className='grid grid-cols-3'>
-                       <div className='border-r-2 border-gray-400'>
-                        <button className='border-2 rounded-full p-3 w-95 hover:bg-gray-500 text-left' type='button'>
-                          Sample Button
-                        </button>
+                      <div className='grid grid-row border-r-2 pr-2'>
+                        <div className='flex flex-row'>
+                          <Autocomplete items={Friends}>
+                            <AutocompleteInput className="relative" placeholder='Search friend to message' id="friends"/>
+                            <AutocompleteClear className="absolute right-263 px-2 mt-2.5" />
+                            <AutocompletePositioner sideOffset={6}>
+                              <AutocompletePopup>
+                                <AutocompleteEmpty>No tags found.</AutocompleteEmpty>
+                                <AutocompleteList>
+                                {(Friends) => (
+                                  <AutocompleteItem key={Friends.id} value={Friends.value}>
+                                    {Friends.value}
+                                  </AutocompleteItem>
+                                )}
+                                </AutocompleteList>
+                              </AutocompletePopup>
+                            </AutocompletePositioner>
+                          </Autocomplete>
+                          <Button className="ml-2"><MessageSquarePlus/></Button>
+                        </div>
+                        <div>
+                          
+                        </div>
                       </div>
                       <div className='col-span-2 ml-2'>
                         <div className='grid grid-rows-3 p-2'>
                           <div className='row-span-3'>
                             <ScrollArea className='h-146'>
-
+                              <div className='flex w-full flex-col p-3 gap-3'>
+                                  <MessageBubble message='Hello' variant='sent'/>
+                              </div>
                             </ScrollArea>
                           </div>
                           <div className='row-span-1'>

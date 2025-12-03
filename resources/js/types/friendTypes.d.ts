@@ -15,7 +15,7 @@ export type searchUserTypes = {
 
 export type FriendListTypes = {
     id: number;
-    user_id: number;
+    friend_id: number;
     friend_name: string;
     friend_email: string;
 }

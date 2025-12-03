@@ -27,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Chat page route
     Route::get('/chat', [ChatController::class, 'chatPage'])->name('chatPage');
     Route::post('/sendMessage', [ChatController::class, 'sendMessage'])->name('sendMessage');
+    Route::get('/getChatMessages', [ChatController::class, 'getChatMessages'])->name('getChatMessages');
 
     // Friend Functionality route
     Route::post('/addFriend', [FriendListController::class, 'addFriend'])->name('addFriend');
